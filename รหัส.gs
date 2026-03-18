@@ -90,7 +90,7 @@ function getAISummary() {
     const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-flash-latest:generateContent?key=${apiKey}`;
     
     const payload = {
-      "contents": [{ "parts": [{ "text": `คุณคือ AI ผู้ช่วยการเงิน ข้อมูลคือ ${context}. ช่วยวิเคราะห์สั้นๆ 1-2 ประโยค` }] }]
+      "contents": [{ "parts": [{ "text": `คุณคือ AI ผู้ช่วยการเงิน ข้อมูลคือ ${context}. อ่านข้อมูลการเงินแล้วสรุป พร้อมบอกค่าใช้จ่ายล่าสุดย้อนไป 5 ครั้ง` }] }]
     };
 
     const res = UrlFetchApp.fetch(url, {
