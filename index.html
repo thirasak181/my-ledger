@@ -1,0 +1,190 @@
+<!DOCTYPE html>
+<html>
+<head>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&family=DM+Sans:wght@400;500&display=swap');
+:root{--bg:#0d0f14;--surface:#151820;--surface2:#1c2030;--border:rgba(255,255,255,0.08);--accent:#4af0b0;--text:#e8eaf0;--muted:#7a8090;--spend:#f06060;--save:#4af0b0;--invest:#7eb8ff;--income:#a0e070;}
+*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent;}
+html,body{width:100%;background:var(--bg);color:var(--text);font-family:'DM Sans',sans-serif;font-size:18px;}
+body{padding:0 0 32px;}
+
+.topbar{display:flex;align-items:center;justify-content:space-between;padding:20px 20px 14px;border-bottom:1px solid var(--border);}
+.topbar h1{font-family:'Space Mono',monospace;font-size:16px;color:var(--accent);letter-spacing:2px;}
+.topbar span{font-size:13px;color:var(--muted);}
+
+.add-section{padding:20px 20px 8px;border-bottom:1px solid var(--border);}
+.sec-title{font-size:12px;color:var(--muted);letter-spacing:1.5px;text-transform:uppercase;margin-bottom:12px;}
+.add-row{display:flex;gap:10px;}
+.fab-input{flex:1;background:var(--surface2);border:1px solid var(--border);border-radius:12px;padding:16px;color:var(--text);font-family:'Space Mono',monospace;font-size:17px;outline:none;}
+.fab-input:focus{border-color:var(--accent);}
+.fab-btn{background:var(--accent);color:#0d0f14;border:none;border-radius:12px;padding:16px 22px;font-family:'Space Mono',monospace;font-size:16px;font-weight:700;cursor:pointer;}
+.toast{display:block;margin-top:10px;font-family:'Space Mono',monospace;font-size:13px;color:var(--accent);min-height:20px;text-align:center;}
+
+.net-hero{padding:28px 20px 22px;text-align:center;border-bottom:1px solid var(--border);}
+.net-label{font-size:13px;color:var(--muted);letter-spacing:1.5px;text-transform:uppercase;margin-bottom:8px;}
+.net-amount{font-family:'Space Mono',monospace;font-size:48px;font-weight:700;color:var(--accent);letter-spacing:-1px;}
+
+.wallet-stack{display:flex;flex-direction:column;gap:10px;padding:20px 20px;border-bottom:1px solid var(--border);}
+.wcard{background:var(--surface);border:1px solid var(--border);border-radius:14px;padding:18px 20px;display:flex;align-items:center;justify-content:space-between;}
+.wcard-label{font-size:14px;color:var(--muted);letter-spacing:1px;text-transform:uppercase;}
+.wcard-val{font-family:'Space Mono',monospace;font-size:24px;font-weight:700;}
+
+.section{padding:20px 20px;}
+.bal-row{display:flex;align-items:center;justify-content:space-between;padding:16px;background:var(--surface);border:1px solid var(--border);border-radius:12px;margin-bottom:8px;}
+.bal-acc{font-size:17px;font-weight:500;}
+.bal-wal{font-size:13px;color:var(--muted);margin-top:3px;}
+.bal-amt{font-family:'Space Mono',monospace;font-size:20px;font-weight:700;}
+.pos{color:var(--accent);}.neg{color:var(--spend);}
+
+.tags-row{display:flex;flex-wrap:wrap;gap:8px;}
+.tag{background:var(--surface);border:1px solid var(--border);color:var(--muted);padding:9px 16px;border-radius:20px;font-size:15px;font-family:'Space Mono',monospace;}
+
+.syn-row{background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:16px;display:flex;align-items:flex-start;gap:12px;margin-bottom:8px;}
+.syn-badge{font-size:11px;letter-spacing:1px;text-transform:uppercase;padding:5px 10px;border-radius:6px;white-space:nowrap;margin-top:2px;}
+.income-b{background:rgba(160,224,112,0.12);color:var(--income);}
+.expense-b{background:rgba(240,96,96,0.12);color:var(--spend);}
+.transfer-b{background:rgba(126,184,255,0.12);color:var(--invest);}
+.syn-fmt{font-family:'Space Mono',monospace;font-size:14px;line-height:1.7;color:var(--text);}
+.syn-ex{font-family:'Space Mono',monospace;font-size:12px;color:var(--muted);margin-top:5px;}
+
+/* AI Styling */
+#ai-section{margin-top: 10px;}
+.ai-btn{width:100%; border:1px solid var(--accent); color:var(--accent); background:transparent; padding:12px; border-radius:12px; font-family:'Space Mono',monospace; font-size:14px; cursor:pointer; margin-top:15px;}
+</style>
+</head>
+<body>
+
+<div class="topbar">
+  <h1>LEDGER</h1>
+  <span>finance tracker</span>
+</div>
+
+<div class="add-section">
+  <div class="sec-title">add entry</div>
+  <div class="add-row">
+    <input class="fab-input" id="entry" placeholder="200 ข้าว bkb" onkeydown="if(event.key==='Enter')send()">
+    <button class="fab-btn" onclick="send()">ADD</button>
+  </div>
+  <div class="toast" id="toast"></div>
+</div>
+
+<div class="net-hero">
+  <div class="net-label">net balance</div>
+  <div class="net-amount" id="net-total">฿—</div>
+</div>
+
+<div class="section">
+  <div class="sec-title">wallets</div>
+  <div class="tags-row" id="wallets"></div>
+</div>
+
+<div class="wallet-stack">
+  <div class="wcard"><div class="wcard-label">spend</div><div class="wcard-val neg" id="w-spend">฿—</div></div>
+  <div class="wcard"><div class="wcard-label">save</div><div class="wcard-val pos" id="w-save">฿—</div></div>
+  <div class="wcard"><div class="wcard-label">invest</div><div class="wcard-val" style="color:var(--invest)" id="w-invest">฿—</div></div>
+</div>
+
+<div class="section">
+  <button class="ai-btn" onclick="askAI()">✨ ASK AI SUMMARY</button>
+  <div id="ai-section" style="display:none;">
+    <div class="syn-row" style="border: 1px solid var(--accent); background: rgba(74, 240, 176, 0.05); margin-top:10px;">
+      <div id="ai-content" class="syn-fmt" style="color: var(--accent); font-size: 13px;">Analyzing...</div>
+    </div>
+  </div>
+</div>
+
+<div class="section">
+  <div class="tags-row" id="accounts"></div>
+  <div class="sec-title">accounts</div>
+</div>
+<div class="section">
+  <div id="balances"><div style="color:var(--muted);font-size:15px;padding:8px 0;">loading...</div></div>
+</div>
+
+
+
+
+<div class="section">
+  <div class="sec-title">syntax</div>
+  <div class="syn-row"><span class="syn-badge income-b">income</span><div><div class="syn-fmt">+amount note account wallet</div><div class="syn-ex">+20000 เงินเดือน bkb spend</div></div></div>
+  <div class="syn-row"><span class="syn-badge expense-b">expense</span><div><div class="syn-fmt">amount note account</div><div class="syn-ex">200 ข้าว bkb</div></div></div>
+  <div class="syn-row"><span class="syn-badge transfer-b">transfer</span><div><div class="syn-fmt">amount from_acc from_w > to_acc to_w</div><div class="syn-ex">5000 bkb spend > bkb save</div></div></div>
+</div>
+
+<script>
+function fmt(n){return '฿'+Math.abs(Math.round(n)).toLocaleString();}
+
+function toast(msg){
+  const t=document.getElementById('toast');
+  t.textContent=msg;
+  setTimeout(()=>{t.textContent='';},2500);
+}
+
+function send(){
+  const input = document.getElementById('entry');
+  const text  = input.value.trim().toLowerCase();
+  if(!text) return;
+  input.value = '';
+  input.focus();
+  toast('sending...');
+  google.script.run
+    .withSuccessHandler(function(res){
+      toast('✓ ' + res);
+      loadBalances();
+    })
+    .withFailureHandler(function(err){
+      toast('✗ error');
+    })
+    .parseInput(text);
+}
+
+function askAI() {
+  const aiSection = document.getElementById('ai-section');
+  const aiContent = document.getElementById('ai-content');
+  aiSection.style.display = 'block';
+  aiContent.textContent = '🤖 AI กำลังอ่านบัญชีของคุณ...';
+  
+  google.script.run
+    .withSuccessHandler(function(response) {
+      aiContent.textContent = response;
+    })
+    .withFailureHandler(function(err) {
+      aiContent.textContent = '✗ AI หลับครับ ลองใหม่นะ';
+    })
+    .getAISummary();
+}
+
+function loadMeta(){
+  google.script.run.withSuccessHandler(function(data){
+    document.getElementById('accounts').innerHTML=data.accounts.map(a=>`<span class='tag'>${a}</span>`).join('');
+    document.getElementById('wallets').innerHTML=data.wallets.map(w=>`<span class='tag'>${w}</span>`).join('');
+  }).getMeta();
+}
+
+function loadBalances(){
+  google.script.run.withSuccessHandler(function(data){
+    let total=0,spend=0,save=0,invest=0,html='';
+    for(let key in data){
+      const v=data[key];total+=v;
+      const[acc,wal]=key.split('_');
+      if(wal==='spend')spend+=v;
+      if(wal==='save')save+=v;
+      if(wal==='invest')invest+=v;
+      const cls=v>=0?'pos':'neg';
+      html+=`<div class='bal-row'><div><div class='bal-acc'>${acc}</div><div class='bal-wal'>${wal}</div></div><div class='bal-amt ${cls}'>${v>=0?'':'-'}${fmt(v)}</div></div>`;
+    }
+    document.getElementById('balances').innerHTML=html||'<div style="color:var(--muted);font-size:15px;">no data yet</div>';
+    const nt=document.getElementById('net-total');
+    nt.textContent=(total>=0?'':'-')+fmt(total);
+    nt.style.color=total>=0?'var(--accent)':'var(--spend)';
+    document.getElementById('w-spend').textContent=fmt(spend);
+    document.getElementById('w-save').textContent=fmt(save);
+    document.getElementById('w-invest').textContent=fmt(invest);
+  }).getBalances();
+}
+
+loadMeta();
+loadBalances();
+</script>
+</body>
+</html>
