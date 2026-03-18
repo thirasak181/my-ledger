@@ -1,4 +1,19 @@
-function doGet() {
+function doGet(e) {
+  const MY_SECRET_PASS = "1751252"; // ตั้งรหัสลับของคุณเองที่นี่
+
+  // เช็คว่ามี Parameter "text" และ "key" ส่งมาถูกต้องไหม
+  if (e && e.parameter && e.parameter.text) {
+    if (e.parameter.key !== MY_SECRET_PASS) {
+      return ContentService.createTextOutput("Error: Unauthorized Access")
+        .setMimeType(ContentService.MimeType.TEXT);
+    }
+
+    const result = parseInput(e.parameter.text);
+    return ContentService.createTextOutput("บันทึกสำเร็จ: " + e.parameter.text)
+      .setMimeType(ContentService.MimeType.TEXT);
+  }
+
+  // แสดงหน้าเว็บปกติ
   return HtmlService.createHtmlOutputFromFile("index")
     .addMetaTag('viewport', 'width=device-width, initial-scale=1, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no');
 }
