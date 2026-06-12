@@ -1,5 +1,10 @@
 function doGet(e) {
-  const MY_SECRET_PASS = "1751252"; // ตั้งรหัสลับของคุณเองที่นี่
+  const MY_SECRET_PASS = PropertiesService.getScriptProperties().getProperty('SECRET_PASS');
+  
+  if (!MY_SECRET_PASS) {
+    return ContentService.createTextOutput("Error: SECRET_PASS ไม่ได้ตั้งค่าใน Script Properties")
+      .setMimeType(ContentService.MimeType.TEXT);
+  }
 
   // เช็คว่ามี Parameter "text" และ "key" ส่งมาถูกต้องไหม
   if (e && e.parameter && e.parameter.text) {
@@ -105,7 +110,7 @@ function getAISummary() {
     const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-flash-latest:generateContent?key=${apiKey}`;
     
     const payload = {
-      "contents": [{ "parts": [{ "text": `คุณคือ AI ผู้ช่วยการเงิน ข้อมูลคือ ${context}. อ่านข้อมูลการเงินแล้วสรุป พร้อมบอกค่าใช้จ่ายล่าสุดย้อนไป 5 ครั้ง` }] }]
+      "contents": [{ "parts": [{ "text": `คุณคือ AI ผู้ช่วยการเงิน ข้อมูลคือ ${context}. อ่านข้อมูลการเงิน[...]` }] }]
     };
 
     const res = UrlFetchApp.fetch(url, {
@@ -128,6 +133,7 @@ function getAISummary() {
     return "เกิดข้อผิดพลาด: " + e.toString();
   }
 }
+
 function listMyModels() {
   const apiKey = PropertiesService.getScriptProperties().getProperty('GEMINI_KEY');
   const url = `https://generativelanguage.googleapis.com/v1beta/models?key=${apiKey}`;
